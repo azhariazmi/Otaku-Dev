@@ -1,0 +1,1364 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#120b2e">
+<meta name="description" content="Free online HTML CSS JavaScript code splitter. Upload or paste a single HTML file, extract CSS and JavaScript, customize filenames and download your project as a ZIP.">
+<meta name="keywords" content="HTML splitter, CSS extractor, JavaScript extractor, code converter, HTML editor, ZIP downloader">
+<meta name="author" content="Azhari">
+<meta name="robots" content="index,follow">
+<meta property="og:title" content="Anime Code Splitter">
+<meta property="og:description" content="Split one HTML file into HTML, CSS and JavaScript files. Download your project as ZIP.">
+<meta property="og:type" content="website">
+<title>Anime Code Splitter - HTML CSS JavaScript Converter</title>
+
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%237c3aed'/%3E%3Ctext x='50' y='72' text-anchor='middle' font-size='65' fill='white'%3E%E2%9C%A6%3C/text%3E%3C/svg%3E">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+
+<style>
+:root{
+--bg:#0c0820;
+--panel:#17112f;
+--panel2:#21183e;
+--ink:#f8f5ff;
+--muted:#b7accf;
+--pink:#ff5bbd;
+--purple:#a78bfa;
+--cyan:#5cecff;
+--line:#493667;
+--green:#82ffbf;
+--radius:20px
+}
+
+*{box-sizing:border-box}
+
+html{scroll-behavior:smooth}
+
+body{
+margin:0;
+background:
+radial-gradient(ellipse at 8% 0%,#39205f 0,transparent 35%),
+radial-gradient(ellipse at 100% 30%,#202b65 0,transparent 28%),
+var(--bg);
+color:var(--ink);
+font-family:"Space Grotesk",system-ui,sans-serif;
+min-height:100vh;
+overflow-x:hidden
+}
+
+body:before{
+content:"";
+position:fixed;
+inset:0;
+pointer-events:none;
+opacity:.17;
+background-image:radial-gradient(#fff 1px,transparent 1px);
+background-size:34px 34px;
+z-index:-1
+}
+
+button,input,textarea{font:inherit}
+button{cursor:pointer}
+
+.wrap{
+width:min(1180px,100% - 30px);
+margin:auto
+}
+
+.topbar{
+display:flex;
+align-items:center;
+justify-content:space-between;
+gap:12px;
+padding:19px 0
+}
+
+.brand{
+display:flex;
+align-items:center;
+gap:10px;
+font-weight:700;
+letter-spacing:-.5px
+}
+
+.brand-icon{
+display:grid;
+place-items:center;
+width:42px;
+height:42px;
+border-radius:14px;
+background:linear-gradient(135deg,var(--pink),#8b5cf6);
+box-shadow:0 0 26px #a855f755;
+font-size:22px
+}
+
+.top-pill{
+font-size:12px;
+color:var(--cyan);
+border:1px solid #5cecff55;
+background:#5cecff0d;
+border-radius:99px;
+padding:8px 12px
+}
+
+.hero{
+padding:40px 0 28px;
+text-align:center
+}
+
+.eyebrow{
+display:inline-flex;
+align-items:center;
+gap:8px;
+border:1px solid #ff5bbd55;
+background:#ff5bbd0c;
+color:#ff9bd8;
+padding:8px 13px;
+border-radius:99px;
+font-size:12px;
+font-weight:700;
+letter-spacing:1.2px;
+text-transform:uppercase
+}
+
+.hero h1{
+font-size:clamp(2.3rem,7vw,5rem);
+line-height:1.02;
+letter-spacing:-3px;
+margin:20px auto 14px;
+max-width:850px
+}
+
+.gradient{
+background:linear-gradient(95deg,#ff80cf,#b6a0ff 52%,#5cecff);
+color:transparent;
+background-clip:text;
+-webkit-background-clip:text
+}
+
+.hero p{
+max-width:650px;
+margin:0 auto;
+color:var(--muted);
+font-size:clamp(14px,2vw,17px);
+line-height:1.7
+}
+
+.hero-art{
+display:flex;
+justify-content:center;
+align-items:center;
+gap:9px;
+margin:25px auto 0;
+flex-wrap:wrap
+}
+
+.chip{
+padding:9px 13px;
+border-radius:12px;
+font:12px "DM Mono",monospace;
+border:1px solid var(--line);
+background:#17112fbb
+}
+
+.html-chip{color:#ff9f7a}
+.css-chip{color:#86b7ff}
+.js-chip{color:#ffe66d}
+
+.workspace{
+display:grid;
+grid-template-columns:1fr;
+gap:16px;
+margin:20px 0 26px
+}
+
+.panel{
+background:linear-gradient(145deg,#1b1435f5,#120d27f5);
+border:1px solid var(--line);
+border-radius:var(--radius);
+box-shadow:0 18px 60px #0003;
+overflow:hidden;
+min-width:0
+}
+
+.panel-head{
+display:flex;
+align-items:center;
+justify-content:space-between;
+gap:12px;
+padding:17px 19px;
+border-bottom:1px solid #49366788;
+background:#ffffff03
+}
+
+.panel-title{
+font-size:15px;
+font-weight:700;
+display:flex;
+align-items:center;
+gap:10px
+}
+
+.step{
+display:grid;
+place-items:center;
+width:26px;
+height:26px;
+background:#a78bfa20;
+border:1px solid #a78bfa70;
+color:#c9b8ff;
+border-radius:8px;
+font-size:12px
+}
+
+.panel-note{
+font-size:12px;
+color:var(--muted)
+}
+
+.editor-tools{
+display:flex;
+align-items:center;
+gap:8px;
+flex-wrap:wrap;
+padding:12px 16px 0
+}
+
+.small-btn,.btn{
+border:1px solid var(--line);
+background:#21183e;
+color:var(--ink);
+border-radius:10px;
+padding:9px 12px;
+font-size:12px;
+font-weight:600;
+transition:.2s
+}
+
+.small-btn:hover{
+border-color:var(--purple);
+transform:translateY(-1px)
+}
+
+.file-input{display:none}
+
+.editor{
+width:100%;
+min-height:280px;
+resize:vertical;
+border:0;
+outline:0;
+background:transparent;
+color:#e9e2ff;
+padding:17px 18px;
+font:12px/1.75 "DM Mono",monospace;
+tab-size:2;
+white-space:pre;
+overflow:auto
+}
+
+.editor::placeholder{color:#72658f}
+
+.status{
+display:flex;
+justify-content:space-between;
+gap:12px;
+padding:11px 17px;
+border-top:1px solid #49366766;
+color:var(--muted);
+font-size:11px
+}
+
+.status strong{
+color:var(--green);
+font-weight:500
+}
+
+.controls{
+display:grid;
+grid-template-columns:1fr 1fr;
+gap:12px;
+padding:16px
+}
+
+.field{
+display:flex;
+flex-direction:column;
+gap:7px
+}
+
+.field label{
+font-size:12px;
+color:var(--muted);
+font-weight:600
+}
+
+.field input{
+width:100%;
+min-width:0;
+background:#0f0a22;
+border:1px solid var(--line);
+border-radius:10px;
+padding:11px 12px;
+color:var(--ink);
+outline:none
+}
+
+.field input:focus{
+border-color:var(--purple);
+box-shadow:0 0 0 3px #a78bfa20
+}
+
+.field.full{grid-column:1/-1}
+
+.checkline{
+display:flex;
+align-items:center;
+gap:9px;
+color:var(--muted);
+font-size:12px;
+padding:0 16px 16px
+}
+
+.checkline input{
+accent-color:var(--pink);
+width:16px;
+height:16px
+}
+
+.actions{
+display:flex;
+gap:10px;
+flex-wrap:wrap;
+padding:0 16px 18px
+}
+
+.btn{
+padding:13px 17px;
+font-size:13px
+}
+
+.btn-primary{
+border:0;
+color:#170a29;
+background:linear-gradient(100deg,var(--pink),#c4a4ff);
+box-shadow:0 8px 24px #b66dff30
+}
+
+.btn-primary:hover{
+filter:brightness(1.1);
+transform:translateY(-1px)
+}
+
+.btn-secondary{background:#21183e}
+
+.btn:disabled{
+opacity:.5;
+cursor:not-allowed;
+transform:none
+}
+
+.results{
+display:grid;
+grid-template-columns:repeat(3,minmax(0,1fr));
+gap:13px
+}
+
+.file-card{
+background:#17112f;
+border:1px solid var(--line);
+border-radius:16px;
+overflow:hidden;
+min-width:0
+}
+
+.file-head{
+display:flex;
+align-items:center;
+gap:8px;
+padding:12px;
+border-bottom:1px solid #49366788
+}
+
+.file-dot{
+width:9px;
+height:9px;
+border-radius:50%;
+background:var(--pink);
+flex:none
+}
+
+.file-card:nth-child(2) .file-dot{background:#86b7ff}
+.file-card:nth-child(3) .file-dot{background:#ffe66d}
+
+.filename{
+font:11px "DM Mono",monospace;
+overflow:hidden;
+text-overflow:ellipsis;
+white-space:nowrap
+}
+
+.file-code{
+font:11px/1.6 "DM Mono",monospace;
+color:#bcb1d6;
+padding:12px;
+min-height:150px;
+max-height:220px;
+overflow:auto;
+white-space:pre;
+overflow-wrap:normal
+}
+
+.file-foot{
+display:flex;
+justify-content:space-between;
+align-items:center;
+padding:10px 12px;
+border-top:1px solid #49366766;
+color:var(--muted);
+font-size:10px
+}
+
+.copy-btn{
+background:transparent;
+color:var(--cyan);
+border:0;
+font-size:11px;
+padding:3px
+}
+
+.results-wrap{margin-bottom:40px}
+
+.section-head{
+display:flex;
+justify-content:space-between;
+align-items:end;
+gap:12px;
+margin:0 0 13px
+}
+
+.section-head h2{
+font-size:19px;
+margin:0
+}
+
+.section-head p{
+font-size:12px;
+color:var(--muted);
+margin:5px 0 0
+}
+
+.empty{
+grid-column:1/-1;
+border:1px dashed #493667;
+border-radius:16px;
+padding:25px;
+text-align:center;
+color:var(--muted);
+font-size:13px
+}
+
+.notice{
+display:none;
+margin:0 0 15px;
+padding:12px 14px;
+border-radius:12px;
+background:#ff5b7c14;
+border:1px solid #ff5b7c55;
+color:#ffb8c7;
+font-size:12px;
+line-height:1.5
+}
+
+.notice.show{display:block}
+
+.toast{
+position:fixed;
+left:50%;
+bottom:22px;
+transform:translate(-50%,20px);
+opacity:0;
+pointer-events:none;
+background:#f6edff;
+color:#1a1030;
+padding:12px 17px;
+border-radius:12px;
+font-size:13px;
+font-weight:700;
+box-shadow:0 8px 35px #0005;
+transition:.25s;
+z-index:10;
+max-width:calc(100% - 30px);
+text-align:center
+}
+
+.toast.show{
+opacity:1;
+transform:translate(-50%,0)
+}
+
+footer{
+text-align:center;
+padding:20px 0 30px;
+color:#81749e;
+font-size:11px
+}
+
+footer span{color:var(--pink)}
+
+@media(min-width:850px){
+.workspace{
+grid-template-columns:minmax(0,1.12fr) minmax(330px,.88fr)
+}
+.editor{min-height:410px}
+.hero{padding-top:54px}
+}
+
+@media(max-width:600px){
+.wrap{width:calc(100% - 20px)}
+.topbar{padding:13px 0}
+.brand{font-size:14px}
+.brand-icon{width:36px;height:36px}
+.top-pill{font-size:10px;padding:7px 9px}
+.hero{padding:30px 0 18px}
+.hero h1{letter-spacing:-1.8px}
+.panel-head{padding:14px}
+.panel-note{display:none}
+.controls{padding:13px;gap:10px}
+.actions{padding:0 13px 14px}
+.btn{flex:1;padding:12px 9px;font-size:12px}
+.results{grid-template-columns:1fr}
+.file-code{min-height:90px;max-height:150px}
+.section-head{align-items:start;flex-direction:column}
+.editor{min-height:250px;padding:14px;font-size:11px}
+.hero-art{gap:6px}
+.chip{padding:8px 10px;font-size:11px}
+}
+
+@media(prefers-reduced-motion:reduce){
+*,*:before,*:after{
+scroll-behavior:auto!important;
+transition:none!important;
+animation:none!important
+}
+}
+</style>
+</head>
+
+<body>
+<div class="wrap">
+
+<header class="topbar">
+<div class="brand">
+<div class="brand-icon">✦</div>
+<span>OTAKU<span style="color:var(--pink)">.DEV</span></span>
+</div>
+<div class="top-pill">✧ FREE BROWSER TOOL</div>
+</header>
+
+<main>
+
+<section class="hero">
+<div class="eyebrow">✦ YOUR CODE, UNBUNDLED</div>
+<h1>One code.<br><span class="gradient">Three files.</span></h1>
+<p>
+Transform a single HTML document into separate HTML, CSS and JavaScript files.
+Upload your code, customize filenames and download your project as a ZIP.
+</p>
+
+<div class="hero-art">
+<span class="chip html-chip">◇ index.html</span>
+<span>＋</span>
+<span class="chip css-chip">✧ style.css</span>
+<span>＋</span>
+<span class="chip js-chip">⌘ script.js</span>
+</div>
+</section>
+
+<section class="workspace">
+
+<article class="panel">
+
+<div class="panel-head">
+<div class="panel-title">
+<span class="step">01</span>
+Upload or paste your code
+</div>
+<span class="panel-note">Browser processing</span>
+</div>
+
+<div class="editor-tools">
+
+<label class="small-btn" for="uploadFile">
+↑ Upload from device
+</label>
+
+<input
+class="file-input"
+id="uploadFile"
+type="file"
+accept=".html,.htm,.txt,text/html,text/plain"
+>
+
+<button class="small-btn" id="sampleBtn" type="button">
+✦ Load sample
+</button>
+
+<button class="small-btn" id="clearBtn" type="button">
+Clear
+</button>
+
+</div>
+
+<textarea
+id="source"
+class="editor"
+spellcheck="false"
+autocapitalize="off"
+autocomplete="off"
+aria-label="Source code"
+placeholder="Paste your complete HTML code here...&#10;&#10;Or upload a file from your device using the button above."
+></textarea>
+
+<div class="status">
+<span id="sourceStatus">0 characters</span>
+<span>● <strong>Private by design</strong></span>
+</div>
+
+</article>
+
+<aside class="panel">
+
+<div class="panel-head">
+<div class="panel-title">
+<span class="step">02</span>
+Project settings
+</div>
+<span class="panel-note">Customize filenames</span>
+</div>
+
+<div class="controls">
+
+<div class="field full">
+<label for="projectName">Project name</label>
+<input id="projectName" value="my-project" maxlength="70">
+</div>
+
+<div class="field">
+<label for="htmlName">HTML filename</label>
+<input id="htmlName" value="index.html" maxlength="80">
+</div>
+
+<div class="field">
+<label for="cssName">CSS filename</label>
+<input id="cssName" value="style.css" maxlength="80">
+</div>
+
+<div class="field full">
+<label for="jsName">JavaScript filename</label>
+<input id="jsName" value="script.js" maxlength="80">
+</div>
+
+</div>
+
+<label class="checkline">
+<input id="keepEmpty" type="checkbox">
+Include empty CSS/JS files if none are found
+</label>
+
+<label class="checkline">
+<input id="formatCode" type="checkbox" checked>
+Add extracted CSS/JS references to HTML
+</label>
+
+<div class="actions">
+<button class="btn btn-primary" id="splitBtn" type="button">
+✧ Split my code
+</button>
+
+<button class="btn btn-secondary" id="zipBtn" type="button" disabled>
+↓ Download ZIP
+</button>
+</div>
+
+</aside>
+
+</section>
+
+<div id="notice" class="notice" role="alert"></div>
+
+<section class="results-wrap">
+
+<div class="section-head">
+<div>
+<h2>✦ Your generated files</h2>
+<p>Preview and copy your extracted files.</p>
+</div>
+
+<span class="top-pill" id="fileCount">0 FILES READY</span>
+</div>
+
+<div class="results" id="results">
+<div class="empty">
+Your files will appear here after you split your code.
+</div>
+</div>
+
+</section>
+
+</main>
+
+<footer>
+Made for late-night builders <span>♥</span> · Anime energy, actual useful code.
+<br><br>
+© <span id="year"></span> Azhari Digital Services
+</footer>
+
+</div>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+(function(){
+
+"use strict";
+
+const $ = id => document.getElementById(id);
+
+const source = $("source");
+const notice = $("notice");
+const results = $("results");
+const zipBtn = $("zipBtn");
+
+let generated = null;
+let toastTimer = null;
+
+$("year").textContent = new Date().getFullYear();
+
+const sample = `<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>My Awesome Page</title>
+<style>
+body {
+  font-family: sans-serif;
+  background: #111827;
+  color: white;
+  padding: 2rem;
+}
+h1 {
+  color: #c4b5fd;
+}
+</style>
+</head>
+<body>
+<h1>Hello World!</h1>
+<p>This started as one HTML file.</p>
+<button id="hello">Click me</button>
+<script>
+document.querySelector("#hello").addEventListener("click", () => {
+  alert("Your code has been split!");
+});
+<\/script>
+</body>
+</html>`;
+
+function showToast(message){
+
+const t = $("toast");
+
+t.textContent = message;
+t.classList.add("show");
+
+clearTimeout(toastTimer);
+
+toastTimer = setTimeout(()=>{
+t.classList.remove("show");
+},2600);
+
+}
+
+function setNotice(message){
+
+notice.textContent = message;
+notice.classList.toggle("show",!!message);
+
+}
+
+function safeName(value,fallback){
+
+let s = (value || "")
+.trim()
+.replace(/[<>:"/\\|?*\x00-\x1f]/g,"-")
+.replace(/\s+/g,"-")
+.replace(/^\.+/,"")
+.slice(0,100);
+
+return s || fallback;
+
+}
+
+function safeFilename(value,fallback,ext){
+
+let s = safeName(value,fallback);
+
+if(!s.toLowerCase().endsWith(ext)){
+s = s.replace(/\.[^.]*$/,"") + ext;
+}
+
+return s;
+
+}
+
+function updateCount(){
+
+$("sourceStatus").textContent =
+source.value.length.toLocaleString() +
+" characters · " +
+source.value.split(/\n/).length +
+" lines";
+
+}
+
+function invalidate(){
+
+generated = null;
+
+zipBtn.disabled = true;
+
+$("fileCount").textContent = "0 FILES READY";
+
+}
+
+function extract(sourceText){
+
+const doc = new DOMParser().parseFromString(
+sourceText,
+"text/html"
+);
+
+let css = [];
+let js = [];
+
+// Extract inline CSS.
+
+doc.querySelectorAll("style").forEach(el=>{
+
+css.push(el.textContent || "");
+
+el.remove();
+
+});
+
+// Extract inline JavaScript.
+// External scripts and JSON/data scripts are preserved.
+
+doc.querySelectorAll("script").forEach(el=>{
+
+const type = (el.getAttribute("type") || "")
+.trim()
+.toLowerCase();
+
+const src = el.getAttribute("src");
+
+const executable =
+!type ||
+[
+"text/javascript",
+"application/javascript",
+"module",
+"text/ecmascript",
+"application/ecmascript"
+].includes(type);
+
+if(executable && !src){
+
+js.push(el.textContent || "");
+
+el.remove();
+
+}
+
+});
+
+return {
+
+html:"<!DOCTYPE html>\n" +
+doc.documentElement.outerHTML,
+
+css:css.join("\n\n").trim(),
+
+js:js.join("\n\n").trim()
+
+};
+
+}
+
+function insertAssets(
+html,
+cssName,
+jsName,
+hasCSS,
+hasJS,
+addLinks
+){
+
+if(!addLinks)return html;
+
+const links = [];
+
+if(hasCSS){
+
+links.push(
+'  <link rel="stylesheet" href="' +
+cssName.replace(/&/g,"&amp;").replace(/"/g,"&quot;") +
+'">'
+);
+
+}
+
+if(hasJS){
+
+links.push(
+'  <script src="' +
+jsName.replace(/&/g,"&amp;").replace(/"/g,"&quot;") +
+'" defer><\/script>'
+);
+
+}
+
+if(!links.length)return html;
+
+if(/<\/head\s*>/i.test(html)){
+
+return html.replace(
+/<\/head\s*>/i,
+links.join("\n") + "\n</head>"
+);
+
+}
+
+return html.replace(
+/<html\b[^>]*>/i,
+match => match +
+"\n<head>\n" +
+links.join("\n") +
+"\n</head>"
+);
+
+}
+
+function render(files){
+
+results.replaceChildren();
+
+const entries = [
+
+["HTML",files.htmlName,files.html],
+
+["CSS",files.cssName,files.css],
+
+["JS",files.jsName,files.js]
+
+];
+
+let count = 0;
+
+entries.forEach(([label,name,content])=>{
+
+if(!content && !$("keepEmpty").checked)return;
+
+count++;
+
+const card = document.createElement("article");
+card.className = "file-card";
+
+const head = document.createElement("div");
+head.className = "file-head";
+
+const dot = document.createElement("span");
+dot.className = "file-dot";
+
+const filename = document.createElement("span");
+filename.className = "filename";
+filename.textContent = name;
+
+head.append(dot,filename);
+
+const code = document.createElement("pre");
+code.className = "file-code";
+code.textContent = content || "";
+
+const foot = document.createElement("div");
+foot.className = "file-foot";
+
+const size = document.createElement("span");
+
+size.textContent =
+content.length.toLocaleString() + " chars";
+
+const copy = document.createElement("button");
+
+copy.className = "copy-btn";
+copy.type = "button";
+copy.textContent = "Copy";
+
+copy.addEventListener("click",async()=>{
+
+try{
+
+await navigator.clipboard.writeText(content);
+
+showToast(label + " copied");
+
+}catch(e){
+
+const ta = document.createElement("textarea");
+
+ta.value = content;
+
+document.body.append(ta);
+
+ta.select();
+
+document.execCommand("copy");
+
+ta.remove();
+
+showToast(label + " copied");
+
+}
+
+});
+
+foot.append(size,copy);
+
+card.append(head,code,foot);
+
+results.append(card);
+
+});
+
+if(!count){
+
+const empty = document.createElement("div");
+
+empty.className = "empty";
+empty.textContent = "No files to display.";
+
+results.append(empty);
+
+}
+
+$("fileCount").textContent =
+count + " FILE" + (count === 1 ? "" : "S") + " READY";
+
+}
+
+function split(){
+
+setNotice("");
+
+if(!source.value.trim()){
+
+setNotice("Please paste code or upload an HTML file first.");
+
+source.focus();
+
+return;
+
+}
+
+if(
+!/<html[\s>]/i.test(source.value) &&
+!/<body[\s>]/i.test(source.value) &&
+!/<style[\s>]/i.test(source.value) &&
+!/<script[\s>]/i.test(source.value)
+){
+
+setNotice("This does not appear to be an HTML document.");
+
+return;
+
+}
+
+const names = {
+
+project:safeName(
+$("projectName").value,
+"my-project"
+),
+
+html:safeFilename(
+$("htmlName").value,
+"index.html",
+".html"
+),
+
+css:safeFilename(
+$("cssName").value,
+"style.css",
+".css"
+),
+
+js:safeFilename(
+$("jsName").value,
+"script.js",
+".js"
+)
+
+};
+
+const parts = extract(source.value);
+
+const hasCSS = !!parts.css;
+const hasJS = !!parts.js;
+
+parts.html = insertAssets(
+parts.html,
+names.css,
+names.js,
+hasCSS,
+hasJS,
+$("formatCode").checked
+);
+
+generated = {
+
+projectName:names.project,
+
+htmlName:names.html,
+
+cssName:names.css,
+
+jsName:names.js,
+
+html:parts.html,
+
+css:parts.css,
+
+js:parts.js
+
+};
+
+render(generated);
+
+zipBtn.disabled = false;
+
+showToast("Your code has been split!");
+
+}
+
+async function downloadZip(){
+
+if(!generated)return;
+
+if(typeof JSZip === "undefined"){
+
+setNotice(
+"ZIP library unavailable. Check your internet connection and reload."
+);
+
+return;
+
+}
+
+zipBtn.disabled = true;
+zipBtn.textContent = "Packing...";
+
+try{
+
+const zip = new JSZip();
+
+const folder = zip.folder(generated.projectName);
+
+folder.file(
+generated.htmlName,
+generated.html
+);
+
+if(generated.css.trim() || $("keepEmpty").checked){
+
+folder.file(
+generated.cssName,
+generated.css
+);
+
+}
+
+if(generated.js.trim() || $("keepEmpty").checked){
+
+folder.file(
+generated.jsName,
+generated.js
+);
+
+}
+
+folder.file(
+"README.txt",
+"Generated with Anime Code Splitter.\n\n" +
+"HTML, CSS and JavaScript files were extracted in your browser.\n" +
+"Check external script and stylesheet references manually.\n"
+);
+
+const blob = await zip.generateAsync({
+
+type:"blob",
+
+compression:"DEFLATE",
+
+compressionOptions:{level:6}
+
+});
+
+const url = URL.createObjectURL(blob);
+
+const a = document.createElement("a");
+
+a.href = url;
+
+a.download = generated.projectName + ".zip";
+
+document.body.append(a);
+
+a.click();
+
+a.remove();
+
+setTimeout(()=>{
+URL.revokeObjectURL(url);
+},1500);
+
+showToast("ZIP download started!");
+
+}catch(e){
+
+setNotice("ZIP creation failed: " + e.message);
+
+}finally{
+
+zipBtn.disabled = !generated;
+
+zipBtn.textContent = "↓ Download ZIP";
+
+}
+
+}
+
+// Upload from Android, desktop or tablet.
+
+$("uploadFile").addEventListener("change",async e=>{
+
+const file = e.target.files && e.target.files[0];
+
+if(!file)return;
+
+if(file.size > 5 * 1024 * 1024){
+
+setNotice("File too large. Maximum upload size is 5 MB.");
+
+e.target.value = "";
+
+return;
+
+}
+try{
+
+const content = await file.text();
+
+source.value = content;
+
+updateCount();
+
+invalidate();
+
+setNotice("");
+
+showToast("Uploaded: " + file.name);
+
+}catch(error){
+
+setNotice("Unable to read this file.");
+
+}
+
+e.target.value = "";
+
+});
+
+// Editor events.
+
+source.addEventListener("input",()=>{
+
+updateCount();
+
+invalidate();
+
+});
+// Main buttons.
+
+$("splitBtn").addEventListener("click",split);
+
+zipBtn.addEventListener("click",downloadZip);
+
+$("sampleBtn").addEventListener("click",()=>{
+
+source.value = sample;
+
+updateCount();
+
+invalidate();
+
+showToast("Sample code loaded!");
+
+});
+
+$("clearBtn").addEventListener("click",()=>{
+
+source.value = "";
+
+updateCount();
+
+invalidate();
+
+setNotice("");
+
+results.innerHTML =
+'<div class="empty">Your files will appear here after you split your code.</div>';
+source.focus();
+
+});
+
+// Re-split when output filenames/settings change.
+
+[
+"projectName",
+"htmlName",
+"cssName",
+"jsName",
+"keepEmpty",
+"formatCode"
+].forEach(id=>{
+
+$(id).addEventListener("change",()=>{
+
+if(generated)split();
+
+});
+
+});
+
+updateCount();
+
+})();
+</script>
+
+</body>
+</html>
